@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Usuarios | ProyectoTienda</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-dark: #0f172a;
+            --bg-sidebar: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --card-bg: #1e293b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --transition: all 0.3s ease;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body { background-color: var(--bg-dark); color: var(--text-main); overflow-x: hidden; }
+
+        /* --- SIDEBAR --- */
+        .sidenav {
+            height: 100%; width: 0; position: fixed; z-index: 1000; top: 0; left: 0;
+            background-color: var(--bg-sidebar); overflow-x: hidden; transition: var(--transition);
+            display: flex; flex-direction: column; box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+        }
+
+        .sidebar-header { padding: 30px 25px; color: var(--primary); font-weight: 800; border-bottom: 1px solid rgba(255,255,255,0.05); }
+
+        .sidenav a {
+            padding: 15px 25px; text-decoration: none; font-size: 15px; color: var(--text-muted);
+            display: flex; align-items: center; gap: 15px; transition: var(--transition);
+        }
+
+        .sidenav a:hover, .sidenav a.active { color: white; background: rgba(59, 130, 246, 0.1); border-left: 4px solid var(--primary); }
+        .sidenav .closebtn { position: absolute; top: 10px; right: 25px; font-size: 30px; color: var(--text-muted); text-decoration: none; }
+
+        /* --- TOP BAR --- */
+        .top-bar {
+            background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(10px);
+            padding: 15px 40px; display: flex; align-items: center; gap: 20px;
+            position: sticky; top: 0; z-index: 900; border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .open-btn { background: var(--bg-sidebar); border: 1px solid rgba(255,255,255,0.1); color: white; padding: 8px 15px; border-radius: 8px; cursor: pointer; }
+
+        /* --- CONTENIDO --- */
+        .content-area { padding: 40px; max-width: 1200px; margin: 0 auto; transition: margin-left .5s; }
+
+        .user-management-card {
+            background: var(--card-bg); border-radius: 20px; overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .card-header {
+            padding: 25px 30px; display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .table-responsive { padding: 20px; overflow-x: auto; }
+
+        .excel-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+
+        .excel-table th {
+            background: rgba(15, 23, 42, 0.5); color: var(--primary);
+            padding: 15px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+            font-size: 12px; border-bottom: 2px solid var(--bg-dark);
+        }
+
+        .excel-table td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); }
+
+        .excel-table tr:hover td { background: rgba(59, 130, 246, 0.05); color: white; }
+
+        /* --- BOTONES --- */
+        .btn {
+            padding: 10px 20px; border-radius: 10px; border: none; cursor: pointer;
+            font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 8px; transition: var(--transition);
+        }
+
+        .btn-add { background: var(--primary); color: white; }
+        .btn-update { background: var(--warning); color: white; }
+        .btn-delete { background: var(--danger); color: white; }
+        .btn-refresh { background: var(--bg-dark); color: white; border: 1px solid rgba(255,255,255,0.1); }
+        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        /* --- MODAL --- */
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: var(--card-bg); margin: 5% auto; padding: 40px; border-radius: 24px;
+            width: 90%; max-width: 500px; border: 1px solid rgba(255,255,255,0.1);
+            position: relative; animation: slideDown 0.4s ease;
+        }
+
+        @keyframes slideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+        .close-modal { position: absolute; right: 25px; top: 20px; font-size: 28px; color: var(--text-muted); cursor: pointer; }
+
+        .action-toggles { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 25px; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; color: var(--text-muted); font-size: 13px; }
+        .form-group input {
+            width: 100%; padding: 12px; background: var(--bg-dark); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; color: white; transition: var(--transition);
+        }
+        .form-group input:focus { border-color: var(--primary); outline: none; }
+        .form-group input:read-only { opacity: 0.6; background: rgba(0,0,0,0.2); cursor: not-allowed; }
+        .form-group input:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .btn-submit { width: 100%; background: var(--primary); color: white; padding: 15px; font-size: 16px; margin-top: 10px; }
+
+        .sidebar-footer { margin-top: auto; padding: 20px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .logout-link { width: 100%; background: var(--danger); color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 600; display: flex; align-items: center; justify-content: center; gap: 10px; }
+    </style>
+</head>
+<body>
+
+<div id="mySidenav" class="sidenav">
+    <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+    <div class="sidebar-header">
+        <i class="fas fa-layer-group"></i> Admin Panel
+    </div>
+    <a th:href="@{/home}"><i class="fas fa-home"></i> Inicio</a>
+    <a th:href="@{/usuarios}" class="active"><i class="fas fa-users"></i> Usuarios</a>
+    <a href="#"><i class="fas fa-box"></i> Productos</a>
+
+    <div class="sidebar-footer">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="logout-link"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</button>
+        </form>
+    </div>
+</div>
+
+<div id="main">
+    <header class="top-bar">
+        <button class="open-btn" onclick="openNav()">&#9776;</button>
+        <h1 style="font-size: 20px;">Gestión de Usuarios</h1>
+    </header>
+
+    <main class="content-area">
+        <div class="user-management-card">
+            <div class="card-header">
+                <h2>Lista de Usuarios</h2>
+                <button class="btn btn-add" onclick="openModal(); setMode('add')">
+                    <i class="fas fa-tools"></i> Nueva Acción
+                </button>
+            </div>
+
+            <div class="table-responsive">
+                <table class="excel-table">
+                    <thead>
+                    <tr>
+                        <th><i class="fas fa-id-badge"></i> ID</th>
+                        <th><i class="fas fa-user"></i> Nombre</th>
+                        <th><i class="fas fa-signature"></i> Apellido</th>
+                        <th><i class="fas fa-birthday-cake"></i> Edad</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="u : ${listaUsuarios}">
+                        <td th:text="${u.idUsuario}" style="color: var(--primary); font-weight: 600;">1</td>
+                        <td th:text="${u.nombreUsu}">Nombre</td>
+                        <td th:text="${u.apellidoUsu}">Apellido</td>
+                        <td><span th:text="${u.edadUsu}" style="background: rgba(59,130,246,0.1); padding: 4px 10px; border-radius: 20px;">0</span></td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="actionModal" class="modal">
+    <div class="modal-content">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <h3 id="modalTitle" style="margin-bottom: 25px; font-size: 22px; text-align: center;">Acciones de Usuario</h3>
+
+        <div class="action-toggles">
+            <button class="btn btn-add" onclick="setMode('add')" title="Agregar"><i class="fas fa-plus"></i></button>
+            <button class="btn btn-update" onclick="setMode('update')" title="Actualizar"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-delete" onclick="setMode('delete')" title="Eliminar"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-refresh" onclick="location.reload()" title="Refrescar"><i class="fas fa-sync"></i></button>
+        </div>
+
+        <form id="userForm" method="post" th:action="@{/usuarios/guardar}">
+            <div class="form-group">
+                <label for="userId">ID Usuario</label>
+                <input type="number" id="userId" name="idUsuario" placeholder="Automático" readonly>
+            </div>
+            <div class="form-group">
+                <label for="userName">Nombre</label>
+                <input type="text" id="userName" name="nombreUsu" required>
+            </div>
+            <div class="form-group">
+                <label for="userLastname">Apellido</label>
+                <input type="text" id="userLastname" name="apellidoUsu" required>
+            </div>
+            <div class="form-group">
+                <label for="userAge">Edad</label>
+                <input type="number" id="userAge" name="edadUsu" required>
+            </div>
+
+            <button type="submit" id="submitBtn" class="btn btn-submit">
+                Confirmar Operación
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openNav() { document.getElementById("mySidenav").style.width = "280px"; }
+    function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+    function openModal() { document.getElementById("actionModal").style.display = "block"; }
+    function closeModal() { document.getElementById("actionModal").style.display = "none"; }
+
+    function setMode(mode) {
+        const form = document.getElementById('userForm');
+        const userId = document.getElementById('userId');
+        const userName = document.getElementById('userName');
+        const userLastname = document.getElementById('userLastname');
+        const userAge = document.getElementById('userAge');
+        const submitBtn = document.getElementById('submitBtn');
+
+        // Reset inicial
+        userId.readOnly = true;
+        userName.disabled = false;
+        userLastname.disabled = false;
+        userAge.disabled = false;
+        submitBtn.style.display = "flex";
+
+        if (mode === 'add') {
+            form.action = "/usuarios/guardar";
+            document.getElementById('modalTitle').innerText = "Agregar Nuevo Usuario";
+            submitBtn.style.backgroundColor = "var(--primary)";
+            submitBtn.innerText = "Guardar Usuario";
+            userId.value = "";
+            userId.placeholder = "Automático";
+        } else if (mode === 'update') {
+            form.action = "/usuarios/guardar";
+            document.getElementById('modalTitle').innerText = "Actualizar Usuario";
+            userId.readOnly = false;
+            userId.placeholder = "ID a modificar";
+            submitBtn.style.backgroundColor = "var(--warning)";
+            submitBtn.innerText = "Actualizar Datos";
+        } else if (mode === 'delete') {
+            form.action = "/usuarios/eliminar";
+            document.getElementById('modalTitle').innerText = "Eliminar Usuario";
+            userId.readOnly = false;
+            userId.placeholder = "ID a eliminar";
+            userName.disabled = true;
+            userLastname.disabled = true;
+            userAge.disabled = true;
+            submitBtn.style.backgroundColor = "var(--danger)";
+            submitBtn.innerText = "Borrar Usuario";
+        }
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,328 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+body {
+    background-color: #121212; /* Fondo oscuro principal */
+    color: #e0e0e0; /* Texto claro por defecto */
+    transition: margin-left .5s;
+}
+
+/* SIDEBAR ESTILO INSPIRACIÓN */
+.sidenav {
+    height: 100%;
+    width: 0;
+    position: fixed;
+    z-index: 1000;
+    top: 0;
+    left: 0;
+    background-color: #0a0a0a; /* Negro más profundo para el menú */
+    overflow-x: hidden;
+    transition: 0.5s;
+    padding-top: 60px;
+    border-right: 1px solid #222;
+}
+
+.sidenav a, .logout-link {
+    padding: 15px 32px;
+    text-decoration: none;
+    font-size: 20px;
+    color: #a0a0a0;
+    display: block;
+    transition: 0.3s;
+}
+
+.sidenav a:hover, .logout-link:hover {
+    color: #ffffff;
+    background-color: #1f1f1f;
+}
+
+.sidenav .closebtn {
+    position: absolute;
+    top: 10px;
+    right: 25px;
+    font-size: 36px;
+}
+
+.sidebar-header h3 {
+    color: white;
+    padding: 0 32px 20px 32px;
+    border-bottom: 1px solid #333;
+    margin-bottom: 20px;
+}
+
+.logout-link {
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+    font-size: 18px;
+    color: #ff6b6b; /* Un rojo más suave para dark mode */
+}
+
+/* CONTENIDO PRINCIPAL */
+#main {
+    transition: margin-left .5s;
+    padding: 0;
+}
+
+.top-bar {
+    background-color: #1e1e1e; /* Barra superior oscura */
+    padding: 15px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    border-bottom: 1px solid #333;
+}
+
+.open-btn {
+    font-size: 24px;
+    cursor: pointer;
+    color: #e0e0e0;
+}
+
+.user-info {
+    color: #e0e0e0;
+}
+
+.content-area {
+    padding: 30px;
+}
+
+.card {
+    background: #1e1e1e;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    border: 1px solid #333;
+}
+
+.card h2 {
+    color: #ffffff;
+    margin-bottom: 10px;
+}
+
+/* --- Estilo de Tabla Tipo Excel (Dark Mode) --- */
+.user-management-card {
+    background: #1e1e1e;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    margin-top: 20px;
+    border: 1px solid #333;
+}
+
+.user-management-card h2 {
+    color: #ffffff;
+}
+
+.table-responsive {
+    border: 1px solid #444;
+    overflow-x: auto;
+}
+
+.excel-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1e1e1e;
+}
+
+.excel-table th {
+    background-color: #2d2d2d; /* Cabecera de tabla oscura */
+    color: #e0e0e0;
+    border: 1px solid #444;
+    padding: 10px;
+    text-align: left;
+    font-size: 14px;
+}
+
+.excel-table td {
+    border: 1px solid #444;
+    padding: 8px 12px;
+    font-size: 13px;
+    color: #cccccc;
+}
+
+.excel-table tbody tr:nth-child(even) {
+    background-color: #242424;
+}
+
+.excel-table tbody tr:hover {
+    background-color: #333333; /* Resaltado al pasar el mouse */
+}
+
+/* --- ESTILOS DE BOTONES --- */
+.btn {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: 0.3s;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-add {
+    background-color: #2ea043; /* Verde estilo GitHub Dark */
+    color: white;
+    margin-bottom: 15px;
+}
+
+.btn-update {
+    background-color: #1f6feb; /* Azul estilo GitHub Dark */
+    color: white;
+    margin-right: 5px;
+}
+
+.btn-delete {
+    background-color: #da3633; /* Rojo alerta Dark */
+    color: white;
+}
+
+.btn-refresh {
+    background-color: #484f58; /* Gris oscuro para refrescar */
+    color: white;
+}
+
+.btn:hover {
+    filter: brightness(1.2);
+    transform: translateY(-1px);
+}
+
+.actions-column {
+    width: 180px;
+    text-align: center;
+}
+
+.actions-cell {
+    text-align: center;
+}
+
+/* =========================================
+   ESTILOS DEL MODAL FLOTANTE Y CENTRADO
+   ========================================= */
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.75); /* Fondo aún más oscuro */
+    backdrop-filter: blur(4px);
+}
+
+.modal-content.form-modal {
+    background-color: #1e1e1e; /* Modal oscuro */
+    margin: 8% auto;
+    padding: 30px;
+    border: 1px solid #444;
+    width: 450px;
+    border-radius: 8px;
+    box-shadow: 0 5px 25px rgba(0,0,0,0.8);
+    position: relative;
+    animation: fadeIn 0.3s ease-out;
+}
+
+.modal-content.form-modal h3 {
+    color: #ffffff !important;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(-20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+.close-modal {
+    color: #888;
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: #ff6b6b;
+    text-decoration: none;
+}
+
+/* --- ESTILOS INTERNOS DEL FORMULARIO --- */
+.action-toggles {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    margin-bottom: 25px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 15px;
+}
+
+.action-toggles .btn {
+    flex: 1;
+    padding: 8px;
+    font-size: 13px;
+    margin: 0;
+}
+
+.form-group {
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #aaaaaa;
+    font-size: 14px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    background-color: #2a2a2a; /* Input oscuro */
+    color: #ffffff;
+    border: 1px solid #444;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-sizing: border-box;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: #1f6feb;
+    background-color: #333333;
+}
+
+.form-group input:disabled {
+    background-color: #151515;
+    color: #555555;
+    cursor: not-allowed;
+    border-color: #222;
+}
+
+.btn-submit {
+    padding: 12px;
+    font-size: 15px;
+    border-radius: 4px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
