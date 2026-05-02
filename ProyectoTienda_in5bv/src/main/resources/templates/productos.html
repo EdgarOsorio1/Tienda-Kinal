@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Productos | ProyectoTienda</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --bg-dark: #0f172a;
+            --bg-sidebar: #1e293b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --card-bg: #1e293b;
+            --danger: #ef4444;
+            --success: #10b981;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-main);
+            overflow-x: hidden;
+            background-image: radial-gradient(circle at 0% 0%, rgba(59, 130, 246, 0.03) 0%, transparent 50%);
+        }
+
+        /* --- SIDEBAR --- */
+        .sidenav {
+            height: 100%; width: 260px; position: fixed; z-index: 1000; top: 0; left: 0;
+            background-color: var(--bg-sidebar); border-right: 1px solid rgba(255,255,255,0.05);
+            display: flex; flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 30px 25px; font-size: 20px; font-weight: 800; color: var(--primary);
+            display: flex; align-items: center; gap: 12px;
+        }
+
+        .sidenav a {
+            padding: 15px 25px; text-decoration: none; font-size: 15px; color: var(--text-muted);
+            display: flex; align-items: center; gap: 15px; transition: var(--transition);
+        }
+
+        .sidenav a:hover, .sidenav a.active {
+            color: var(--text-main); background: rgba(59, 130, 246, 0.1);
+            border-left: 4px solid var(--primary);
+        }
+
+        /* --- MAIN CONTENT --- */
+        #main { margin-left: 260px; padding: 20px; transition: margin-left .5s; }
+
+        .top-bar {
+            background: rgba(30, 41, 59, 0.8); backdrop-filter: blur(12px);
+            padding: 15px 30px; display: flex; justify-content: space-between;
+            align-items: center; border-radius: 15px; margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .btn-primary {
+            background: var(--primary); color: white; border: none; padding: 10px 20px;
+            border-radius: 10px; cursor: pointer; font-weight: 600; text-decoration: none;
+            display: inline-flex; align-items: center; gap: 8px; transition: var(--transition);
+        }
+
+        .btn-primary:hover { background: var(--primary-hover); transform: translateY(-2px); }
+
+        /* --- TABLE STYLE --- */
+        .card {
+            background: var(--card-bg); padding: 25px; border-radius: 20px;
+            border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+
+        th {
+            text-align: left; padding: 15px; color: var(--primary);
+            font-size: 12px; text-transform: uppercase; letter-spacing: 1px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        td { padding: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); color: var(--text-muted); }
+
+        .badge {
+            background: rgba(16, 185, 129, 0.1); color: var(--success);
+            padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600;
+        }
+
+        .actions a { margin-right: 15px; font-size: 18px; transition: 0.2s; }
+        .edit { color: var(--primary); }
+        .delete { color: var(--danger); }
+        .actions a:hover { opacity: 0.7; }
+
+        .sidebar-footer { margin-top: auto; padding: 20px; }
+        .logout-btn {
+            width: 100%; background: var(--danger); color: white; border: none;
+            padding: 12px; border-radius: 10px; font-weight: 700; cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidenav">
+    <div class="sidebar-header">
+        <i class="fas fa-store"></i>
+        <span>Admin Panel</span>
+    </div>
+    <a th:href="@{/home}"><i class="fas fa-chart-line"></i> Inicio</a>
+    <a th:href="@{/usuarios}"><i class="fas fa-users"></i> Usuarios</a>
+    <a th:href="@{/productos}" class="active"><i class="fas fa-box"></i> Productos</a>
+
+    <div class="sidebar-footer">
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="logout-btn">
+                <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+    <header class="top-bar">
+        <h2>Gestión de Inventario</h2>
+        <a th:href="@{/productos/nuevo}" class="btn-primary">
+            <i class="fas fa-plus-circle"></i> Nuevo Producto
+        </a>
+    </header>
+
+    <main class="content-area">
+        <div class="card">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Producto</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Acciones</th>
+                </tr>
+                </thead>
+                <tbody>
+                <!-- Iteración de productos desde el backend -->
+                <tr th:each="p : ${productos}">
+                    <td th:text="${p.idProducto}">#</td>
+                    <td>
+                        <div style="display: flex; flex-direction: column;">
+                            <b th:text="${p.nombreProd}" style="color: var(--text-main);">Nombre</b>
+                            <small th:text="${p.descripcionProd}">Descripción</small>
+                        </div>
+                    </td>
+                    <td th:text="${'Q' + p.precioProd}">Q0.00</td>
+                    <td>
+                        <span class="badge" th:text="${p.existencia + ' unidades'}">0</span>
+                    </td>
+                    <td class="actions">
+                        <a th:href="@{/productos/editar/{id}(id=${p.idProducto})}" class="edit">
+                            <i class="fas fa-pen-to-square"></i>
+                        </a>
+                        <a th:href="@{/productos/eliminar/{id}(id=${p.idProducto})}"
+                           class="delete"
+                           onclick="return confirm('¿Eliminar este producto permanentemente?')">
+                            <i class="fas fa-trash-can"></i>
+                        </a>
+                    </td>
+                </tr>
+                <!-- Fila de ejemplo si la lista está vacía -->
+                <tr th:if="${#lists.isEmpty(productos)}">
+                    <td colspan="5" style="text-align: center; padding: 40px;">
+                        <i class="fas fa-folder-open" style="font-size: 30px; margin-bottom: 10px;"></i>
+                        <p>No hay productos registrados actualmente.</p>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</div>
+
+</body>
+</html>
